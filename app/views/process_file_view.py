@@ -17,79 +17,75 @@ class ProcessFileView(APIView):
             data = request.FILES
             serializer = self.serializer_class(data=data)
             if not serializer.is_valid():
-                return Response({
-                    'message': 'File not valid'
-                }, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'message': 'File not valid'}, status=status.HTTP_400_BAD_REQUEST)
 
             excel_file = data.get('file')
             if not excel_file:
-                return Response({
-                    'message': 'No file uploaded'
-                }, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'message': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
 
-            df = pd.read_excel(excel_file, sheet_name=0)
-            data_array = []
-            errors = []
-
-            for index, row in df.iterrows():
-                row_errors = {}
-
-                date = row['Date']
-                country = row['Country']
-                transaction_type = row['Transaction']
-                currency = row['Currency']
-                input_amount = row['Input Amount']
-                net_amount = row['Net Amount']
-
-                # Filter out data that does not contain the year 2020
-                if not isinstance(date, datetime) or date.year != 2020:
-                    continue
-
-                # Validations
-                if not isinstance(date, datetime):
-                    row_errors['date'] = 'Invalid date format'
-                if len(country) != 2:
-                    row_errors['country'] = 'Country code must be ISO 3166 format'
-                if transaction_type not in ['purchase', 'sale']:
-                    row_errors['transaction_type'] = 'Transaction type must be purchase or sale'
-                if len(currency) != 3:
-                    row_errors['currency'] = 'Currency code must be ISO 4217 format'
-                if not isinstance(net_amount, (int, float)):
-                    row_errors['net_amount'] = 'Net amount must be a number'
-                if not isinstance(input_amount, (int, float)):
-                    row_errors['input_amount'] = 'Input amount must be a number'
-
-                if row_errors:
-                    errors.append({
-                        'row': index,
-                        'errors': row_errors
-                    })
-                    continue
-
-                input_data = TransactionData(
-                    date=date,
-                    country=country,
-                    transaction_type=transaction_type,
-                    currency=currency,
-                    input_amount=input_amount,
-                    net_amount=net_amount
-                )
-                data_array.append(input_data)
+            # Read Excel file and validate its data
+            data_frame = pd.read_excel(excel_file, sheet_name=0)
+            data_array, errors = self.validate_data(data_frame)
 
             if errors:
-                return Response({
-                    'message': 'Validation errors found',
-                    'errors': errors
-                }, status=status.HTTP_400_BAD_REQUEST)
+                # Return errors if validation fails
+                return Response({'message': 'Validation errors found', 'errors': errors}, status=status.HTTP_400_BAD_REQUEST)
 
+            # If validation passes, bulk create TransactionData objects
             TransactionData.objects.bulk_create(data_array)
-            return Response({
-                'message': 'Successfully uploaded data'
-            }, status=status.HTTP_201_CREATED)
+            return Response({'message': 'Successfully uploaded data'}, status=status.HTTP_201_CREATED)
 
         except Exception as e:
-            return Response({
-                'message': 'Server error',
-                'details': str(e)
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            # Handle server errors
+            return Response({'message': 'Server error', 'details': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    def validate_data(self, data_frame):
+        data_array = []
+        errors = []
+
+        for index, row in data_frame.iterrows():
+            row_errors = {}
+
+            # Extract data from each row
+            date = row['Date']
+            country = row['Country']
+            transaction_type = row['Transaction']
+            currency = row['Currency']
+            input_amount = row['Input Amount']
+            net_amount = row['Net Amount']
+
+            # Filter out data that does not belong to the year 2020
+            if not isinstance(date, datetime) or date.year != 2020:
+                continue
+
+            # Validations
+            if not isinstance(date, datetime):
+                row_errors['date'] = 'Invalid date format'
+            if len(country) != 2:
+                row_errors['country'] = 'Country code must be ISO 3166 format'
+            if transaction_type not in ['purchase', 'sale']:
+                row_errors['transaction_type'] = 'Transaction type must be purchase or sale'
+            if len(currency) != 3:
+                row_errors['currency'] = 'Currency code must be ISO 4217 format'
+            if not isinstance(net_amount, (int, float)):
+                row_errors['net_amount'] = 'Net amount must be a number'
+            if not isinstance(input_amount, (int, float)):
+                row_errors['input_amount'] = 'Input amount must be a number'
+
+            if row_errors:
+                # If row has errors, add it to the errors list
+                errors.append({'row': index, 'errors': row_errors})
+                continue
+
+            # If row passes validation, create TransactionData object
+            input_data = TransactionData(
+                date=date,
+                country=country,
+                transaction_type=transaction_type,
+                currency=currency,
+                input_amount=input_amount,
+                net_amount=net_amount
+            )
+            data_array.append(input_data)
+
+        return data_array, errors
