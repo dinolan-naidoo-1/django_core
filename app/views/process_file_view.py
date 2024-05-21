@@ -23,25 +23,30 @@ class ProcessFileView(APIView):
             if not excel_file:
                 return Response({'message': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
 
-            df = pd.read_excel(excel_file, sheet_name=0)
-            data_array, errors = self.validate_data(df)
+            # Read Excel file and validate its data
+            data_frame = pd.read_excel(excel_file, sheet_name=0)
+            data_array, errors = self.validate_data(data_frame)
 
             if errors:
+                # Return errors if validation fails
                 return Response({'message': 'Validation errors found', 'errors': errors}, status=status.HTTP_400_BAD_REQUEST)
 
+            # If validation passes, bulk create TransactionData objects
             TransactionData.objects.bulk_create(data_array)
             return Response({'message': 'Successfully uploaded data'}, status=status.HTTP_201_CREATED)
 
         except Exception as e:
+            # Handle server errors
             return Response({'message': 'Server error', 'details': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def validate_data(self, df):
+    def validate_data(self, data_frame):
         data_array = []
         errors = []
 
-        for index, row in df.iterrows():
+        for index, row in data_frame.iterrows():
             row_errors = {}
 
+            # Extract data from each row
             date = row['Date']
             country = row['Country']
             transaction_type = row['Transaction']
@@ -49,7 +54,7 @@ class ProcessFileView(APIView):
             input_amount = row['Input Amount']
             net_amount = row['Net Amount']
 
-            # Filter out data that does not contain the year 2020
+            # Filter out data that does not belong to the year 2020
             if not isinstance(date, datetime) or date.year != 2020:
                 continue
 
@@ -68,9 +73,11 @@ class ProcessFileView(APIView):
                 row_errors['input_amount'] = 'Input amount must be a number'
 
             if row_errors:
+                # If row has errors, add it to the errors list
                 errors.append({'row': index, 'errors': row_errors})
                 continue
 
+            # If row passes validation, create TransactionData object
             input_data = TransactionData(
                 date=date,
                 country=country,
