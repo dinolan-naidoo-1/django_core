@@ -54,7 +54,9 @@ At this point you can navigate to
 - Upload the test sheet 
 - You should receive a message: 'Successfully uploaded data'
 - Navigate to `http://localhost:8000/admin` and reload
-- Confirm that the data was uploaded successfuly
+- Confirm that the data was uploaded successfully
+
+Note: I have not implemented authentication for these endpoints as my goal was to demonstrate the functionality in the most straightforward manner possible.
 #
 ## Testing retrieveRow endpoint
 
