@@ -67,7 +67,7 @@ Note: I have not implemented authentication for these endpoints as my goal was t
 #
 2.
 - The next step is to add a currency (note this uses a mock function)
-- `http://localhost:8000/app/retrieveRows/?country=DE&date=2020/02/03?currency=GBP` & hit enter
+- `http://localhost:8000/app/retrieveRows/?country=DE&date=2020/02/03&currency=GBP` & hit enter
 - You should see the currency, input amount and net amount change
 #
 3.
