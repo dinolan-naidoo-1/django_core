@@ -25,8 +25,10 @@ class RetrieveRowsViewTestCase(APITestCase):
             'currency': 'EUR'
         }
         response = self.client.get(url, params)
+
+        # Assertions for a successful response
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)  # Expecting one row in the response
+        self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['country'], 'US')
         self.assertEqual(response.data[0]['date'], '2024-05-21')
         self.assertEqual(response.data[0]['transaction_type'], 'Sale')
@@ -40,6 +42,8 @@ class RetrieveRowsViewTestCase(APITestCase):
             'currency': 'EUR'
         }
         response = self.client.get(url, params)
+
+        # Assertion for empty data returned
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_retrieve_rows_invalid_date_format(self):
@@ -50,5 +54,7 @@ class RetrieveRowsViewTestCase(APITestCase):
             'currency': 'EUR'
         }
         response = self.client.get(url, params)
+
+        # Assertion for failed response
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
