@@ -24,18 +24,14 @@ docker compose up
 ```
 - If you receive an error **ModuleNotFound**. Try `docker compose up --build`
 
-At this point you can navigate to
-`http://localhost:8000/admin`
 
-The following does not follow convention, however for simplicity sake I have not hid any secrets via an env file.
-You can login to the admin panel using:
-- username: testUser
-- password: testPassword
-
-If that does not work try the following:
+To log in to the admin panel, first create a user:
 ```bash
 python manage.py createsuperuser
 ```
+
+At this point you can navigate to
+`http://localhost:8000/admin` and use the details you just created.
 
 ## Testing processFile endpoint
 
