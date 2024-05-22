@@ -3,11 +3,10 @@
 This demo project showcases two endpoints:
 
 1. POST - processFile: This endpoint enables users to upload an Excel file containing transactional data. Upon upload, the data undergoes validation and is subsequently stored in the database.
-
-
+#
 2. GET - retrieveRows: This endpoint permits users to retrieve existing transaction records for the year 2020.
  
-
+#
 ## Getting Started
 
 - Clone repository to your local machine 
@@ -32,7 +31,7 @@ python manage.py createsuperuser
 
 At this point you can navigate to
 `http://localhost:8000/admin` and use the details you just created.
-
+#
 ## Testing processFile endpoint
 
 - Download the Django_Test_Sheet attached in the email
@@ -41,7 +40,7 @@ At this point you can navigate to
 - You should receive a message: 'Successfully uploaded data'
 - Navigate to `http://localhost:8000/admin` 
 - Confirm that the data was uploaded successfuly
-
+#
 ## Testing retrieveRow endpoint
 
 1.
@@ -63,7 +62,7 @@ At this point you can navigate to
 - To test the date validation use the following: 
 - `http://localhost:8000/app/retrieveRows/?country=DE&date=2023-03-03`
 - Confirm that you receive `Invalid date format. Use YYYY/MM/DD`
-
+#
 ## Run Tests
 - You can use the following to run the test files. Once again I've kept this simple. For future reference, the tests could be run via a cloud run or github action. 
 ```bash
