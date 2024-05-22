@@ -14,31 +14,46 @@ This demo project showcases two endpoints:
 
 cd into the root folder (e.g: Dockerfile path) and run
 ```bash
-docker build . 
+docker-compose build  
 ```
 
 Start containers with
 ```bash
-docker compose up 
+docker-compose up 
 ```
-- If you receive an error **ModuleNotFound**. Try `docker compose up --build`
+- If you receive an error **ModuleNotFound**. 
+- Try `docker compose up --build OR docker-compose build --no-cache`
+#
+Now while the container is running, open up another terminal and cd into the root folder:
 
+Run the following:
+```bash
+docker-compose run web sh
+```
+Now, within the shell we need to run migrations:
+```bash
+python manage.py makemigrations
+```
+Then:
+```bash
+python manage.py migrate
+```
 
-To log in to the admin panel, first create a user:
+Finally, create a user for the admin panel:
 ```bash
 python manage.py createsuperuser
 ```
 
 At this point you can navigate to
-`http://localhost:8000/admin` and use the details you just created.
+`http://localhost:8000/admin` and use the details you just created to log in.
 #
 ## Testing processFile endpoint
 
-- Download the Django_Test_Sheet attached in the email
+- Download the Django_Test_Sheet (Excel format) attached in the email
 - Navigate to `http://localhost:8000/app/processFile/`
 - Upload the test sheet 
 - You should receive a message: 'Successfully uploaded data'
-- Navigate to `http://localhost:8000/admin` 
+- Navigate to `http://localhost:8000/admin` and reload
 - Confirm that the data was uploaded successfuly
 #
 ## Testing retrieveRow endpoint
