@@ -67,3 +67,9 @@ python manage.py createsuperuser
 - To test the date validation use the following: 
 - `http://localhost:8000/app/retrieveRows/?country=DE&date=2023-03-03`
 - Confirm that you receive `Invalid date format. Use YYYY/MM/DD`
+
+## Run Tests
+- You can use the following to run the test files. Once again I've kept this simple. For future reference, the tests could be run via a cloud run or github action. 
+```bash
+python manage.py test
+```
