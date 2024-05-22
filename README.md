@@ -83,5 +83,6 @@ Note: I have not implemented authentication for these endpoints as my goal was t
 ## Run Tests
 - You can use the following to run the test files. Once again I've kept this simple. For future reference, the tests could be run via a cloud run or github action. 
 ```bash
+docker-compose run web sh
 python manage.py test
 ```
